@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --color-crimson: #5c0f16;
+  --color-crimson-light: #7c151e;
+  --color-crimson-dark: #3a080d;
+  --color-gold: #b28a5d;
+  --color-gold-light: #d4a976;
+  --color-cream: #faebd7;
+  --color-cream-light: #fff8ee;
+  
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-lora);
+}
+
+:root {
+  --background: #faebd7; /* Cream background */
+  --foreground: #3a080d; /* Dark crimson for text */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1f0507;
+    --foreground: #faebd7;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), serif;
+}
+
+.heading-gold {
+  color: var(--color-gold);
+}
+
+.btn-primary {
+  @apply bg-white text-crimson font-serif px-6 py-3 rounded-md shadow-md hover:bg-gold hover:text-white transition-all duration-300;
+}
+
+.glass-card {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl rounded-xl;
+}

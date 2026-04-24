@@ -13,16 +13,32 @@ export default function ContactPage() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In the future, API call to send email/DB can go here
-    // Also: Future Razorpay Integration can be injected here or immediately after form validation
+    setIsSubmitting(true);
     
-    // Simulate submission
-    setTimeout(() => {
-      setIsSubmitted(true);
-      setFormData({ name: "", phone: "", email: "", category: "", message: "" });
-    }, 500);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({ name: "", phone: "", email: "", category: "", message: "" });
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Failed to submit. Please check your connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -140,9 +156,10 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="w-full btn-primary text-center block bg-crimson text-white hover:bg-crimson-light"
+                  disabled={isSubmitting}
+                  className="w-full btn-primary text-center block bg-crimson text-white hover:bg-crimson-light disabled:opacity-70"
                 >
-                  Submit Request
+                  {isSubmitting ? "Submitting..." : "Submit Request"}
                 </button>
                 {/* Future integration wrapper for Razorpay below */}
                 {/* <div className="mt-4 pt-4 border-t border-gray-200">

@@ -77,13 +77,10 @@ export default function Home() {
           <p className="text-lg md:text-xl text-cream-light/80 mb-10 max-w-2xl mx-auto font-sans font-light leading-relaxed">
             Get clarity in career, marriage, relationships, health and finances through expert astrology and vastu consultation.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/contact" className="btn-primary w-full sm:w-auto text-lg px-8 py-4 bg-cream text-crimson hover:bg-gold hover:text-white border-2 border-transparent">
-              Book Consultation
+          <div className="flex flex-col items-center justify-center gap-4 mt-8">
+            <Link href="/consultation" className="btn-primary inline-flex items-center justify-center text-xl font-serif tracking-wide px-12 py-5 bg-cream text-crimson hover:bg-gold hover:text-white border-2 border-transparent shadow-xl rounded-md transition-all duration-300 transform hover:-translate-y-1">
+              Ask a Question
             </Link>
-            <a href="https://wa.me/918058940303?text=Hi!%20I%20would%20like%20to%20book%20a%20consultation.%0A%0AName:%20%0ADOB:%20%0APlace%20of%20Birth:%20" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto text-lg px-8 py-4 rounded-md border-2 border-gold text-gold hover:bg-gold hover:text-white transition-all duration-300 font-serif">
-              WhatsApp Chat
-            </a>
           </div>
         </div>
       </section>

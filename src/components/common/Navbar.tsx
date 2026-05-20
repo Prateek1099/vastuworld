@@ -11,8 +11,8 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Services", href: "/services" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
+    // { name: "Blog", href: "/blog" },
+    // { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -36,8 +36,8 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link href="/contact" className="btn-primary py-2 px-4 shadow-none border border-crimson">
-              Book Consultation
+            <Link href="/consultation" className="btn-primary py-2 px-4 shadow-none border border-crimson">
+              Ask Question
             </Link>
           </div>
 
@@ -68,11 +68,11 @@ export default function Navbar() {
               </Link>
             ))}
             <Link 
-              href="/contact" 
+              href="/consultation" 
               onClick={() => setIsOpen(false)}
               className="block px-3 py-2 text-base font-medium text-center text-white bg-crimson hover:bg-crimson-light rounded-md mt-4 mx-2"
             >
-              Book Consultation
+              Ask Question
             </Link>
           </div>
         </div>

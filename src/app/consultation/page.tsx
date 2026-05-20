@@ -37,9 +37,9 @@ export default function ConsultationPage() {
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formFilled, setFormFilled] = useState(false);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<"unpaid" | "paying" | "paid">("unpaid");
 
   useEffect(() => {
     // Check if user is already logged in
@@ -96,17 +96,23 @@ export default function ConsultationPage() {
       const res = await submitConsultation(formData);
       if (res.error) {
         setSubmitError(res.error);
+        setFormFilled(false);
       } else {
         setSubmitSuccess(true);
         setPropertyType("");
         setQuestion("");
         setSelectedFile(null);
-        setPaymentStatus("unpaid");
+        setFormFilled(false);
       }
     } catch (err) {
       setSubmitError("Failed to submit request.");
     }
     setIsSubmitting(false);
+  };
+
+  const handleProceedToPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormFilled(true);
   };
 
   const fadeIn = {
@@ -384,7 +390,7 @@ export default function ConsultationPage() {
                       Ask Another Question
                     </button>
                   </div>
-                ) : paymentStatus !== "paid" ? (
+                ) : formFilled ? (
                   <div className="text-center py-8">
                     <h3 className="text-2xl font-serif text-crimson mb-2">Complete Payment</h3>
                     <p className="text-gray-600 mb-6">A consultation fee of <strong className="text-gold-dark text-lg">₹101</strong> is required to submit your Vastu question.</p>
@@ -392,28 +398,35 @@ export default function ConsultationPage() {
                     <div className="bg-white border-2 border-gold/30 p-6 rounded-2xl inline-block shadow-lg mb-8 relative">
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cream border border-gold/30 px-4 py-1 rounded-full text-xs font-bold text-gold-dark shadow-sm">Scan to Pay</div>
                       <img 
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dshivvastuworld%40upi%26pn%3DShiv%2BVastu%2BWorld%26am%3D101%26cu%3DINR&color=4a1c1c" 
+                        src="/images/qr_code.jpg" 
                         alt="UPI QR Code"
                         className="w-48 h-48 mx-auto"
                       />
-                      <p className="mt-4 font-sans font-medium text-sm text-gray-500">Pay via GPay, PhonePe, or Paytm</p>
+                      <p className="mt-4 font-sans font-medium text-sm text-gray-500">Pay via UPI</p>
                     </div>
 
                     <div>
+                      {submitError && (
+                        <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-md border border-red-200">
+                          {submitError}
+                        </div>
+                      )}
                       <button 
-                        onClick={() => {
-                          setPaymentStatus("paying");
-                          setTimeout(() => setPaymentStatus("paid"), 1500);
-                        }}
-                        disabled={paymentStatus === "paying"}
+                        onClick={handleConsultationSubmit}
+                        disabled={isSubmitting}
                         className="bg-crimson text-white font-serif text-lg px-10 py-3 rounded-md shadow-md hover:bg-crimson-light transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                       >
-                        {paymentStatus === "paying" ? "Verifying Payment..." : "I have paid ₹101"}
+                        {isSubmitting ? "Submitting & Verifying..." : "I have paid ₹101"}
                       </button>
+                      <div className="mt-4">
+                        <button onClick={() => setFormFilled(false)} className="text-sm text-gray-500 hover:text-crimson underline transition-colors">
+                          Go back to edit question
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <form className="space-y-6" onSubmit={handleConsultationSubmit}>
+                  <form className="space-y-6" onSubmit={handleProceedToPayment}>
                     {submitError && (
                       <div className="p-4 bg-red-50 text-red-700 rounded-md border border-red-200">
                         {submitError}
@@ -474,10 +487,9 @@ export default function ConsultationPage() {
                       <p className="text-xs text-gray-500 max-w-xs">By submitting, you agree to our privacy policy and terms of consultation.</p>
                       <button 
                         type="submit" 
-                        disabled={isSubmitting}
-                        className="bg-gold text-white font-serif text-lg px-10 py-3 rounded-md shadow-md hover:bg-[#a67c52] transition-all duration-300 transform hover:-translate-y-1 whitespace-nowrap disabled:opacity-70 disabled:hover:-translate-y-0"
+                        className="bg-gold text-white font-serif text-lg px-10 py-3 rounded-md shadow-md hover:bg-[#a67c52] transition-all duration-300 transform hover:-translate-y-1 whitespace-nowrap"
                       >
-                        {isSubmitting ? "Submitting..." : "Submit Question"}
+                        Proceed to Payment
                       </button>
                     </div>
                   </form>

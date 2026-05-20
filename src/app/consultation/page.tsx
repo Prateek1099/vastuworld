@@ -468,7 +468,7 @@ export default function ConsultationPage() {
                         <p className="text-sm font-medium text-gray-700">
                           {selectedFile ? selectedFile.name : "Click to upload or drag and drop"}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                        <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 4MB</p>
                         <input 
                           id="file-upload"
                           type="file"
@@ -476,7 +476,12 @@ export default function ConsultationPage() {
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                              setSelectedFile(e.target.files[0]);
+                              const file = e.target.files[0];
+                              if (file.size > 4 * 1024 * 1024) {
+                                alert("Image is too large! Please select an image under 4MB. Vercel restricts large mobile photos.");
+                                return;
+                              }
+                              setSelectedFile(file);
                             }
                           }}
                         />

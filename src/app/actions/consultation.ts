@@ -22,22 +22,27 @@ export async function submitConsultation(formData: FormData) {
 
     let imageUrl: string | null = null;
     if (file && file.size > 0 && file.name) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        // Upload to Vercel Blob (Production)
+        const { put } = await import("@vercel/blob");
+        const blob = await put(file.name, file, { access: 'public' });
+        imageUrl = blob.url;
+      } else {
+        // Fallback to local filesystem (Development)
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-      // Create uploads directory in public if it doesn't exist
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const cleanFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const filePath = path.join(uploadDir, cleanFileName);
+
+        await fs.promises.writeFile(filePath, buffer);
+        imageUrl = `/uploads/${cleanFileName}`;
       }
-
-      // Generate a unique clean filename
-      const cleanFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-      const filePath = path.join(uploadDir, cleanFileName);
-
-      // Write file to filesystem
-      await fs.promises.writeFile(filePath, buffer);
-      imageUrl = `/uploads/${cleanFileName}`;
     }
 
     await sql`

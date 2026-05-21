@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { registerUser, loginUser, logoutUser, getCurrentUser } from "@/app/actions/auth";
 import { submitConsultation } from "@/app/actions/consultation";
+import { upload } from '@vercel/blob/client';
 
 export default function ConsultationPage() {
   const [user, setUser] = useState<{name: string, email: string} | null>(null);
@@ -88,11 +89,17 @@ export default function ConsultationPage() {
     const formData = new FormData();
     formData.append("propertyType", propertyType);
     formData.append("question", question);
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
 
     try {
+      if (selectedFile) {
+        // Bypass the 4.5MB serverless limit by uploading directly from the browser!
+        const blob = await upload(selectedFile.name, selectedFile, {
+          access: 'public',
+          handleUploadUrl: '/api/upload',
+        });
+        formData.append("uploadedImageUrl", blob.url);
+      }
+
       const res = await submitConsultation(formData);
       if (res.error) {
         setSubmitError(res.error);
@@ -104,8 +111,9 @@ export default function ConsultationPage() {
         setSelectedFile(null);
         setFormFilled(false);
       }
-    } catch (err) {
-      setSubmitError("Failed to submit request.");
+    } catch (err: any) {
+      console.error(err);
+      setSubmitError("Failed to submit request: " + err.message);
     }
     setIsSubmitting(false);
   };
@@ -468,7 +476,7 @@ export default function ConsultationPage() {
                         <p className="text-sm font-medium text-gray-700">
                           {selectedFile ? selectedFile.name : "Click to upload or drag and drop"}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 4MB</p>
+                        <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
                         <input 
                           id="file-upload"
                           type="file"
@@ -477,8 +485,8 @@ export default function ConsultationPage() {
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
                               const file = e.target.files[0];
-                              if (file.size > 4 * 1024 * 1024) {
-                                alert("Image is too large! Please select an image under 4MB. Vercel restricts large mobile photos.");
+                              if (file.size > 10 * 1024 * 1024) {
+                                alert("Image is too large! Please select an image under 10MB.");
                                 return;
                               }
                               setSelectedFile(file);

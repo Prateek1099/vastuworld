@@ -14,13 +14,14 @@ export async function submitConsultation(formData: FormData) {
 
     const propertyType = formData.get("propertyType") as string;
     const question = formData.get("question") as string;
+    const uploadedImageUrl = formData.get("uploadedImageUrl") as string | null;
     const file = formData.get("image") as File | null;
 
     if (!propertyType || !question) {
       return { error: "Property type and question are required." };
     }
 
-    let imageUrl: string | null = null;
+    let imageUrl: string | null = uploadedImageUrl || null;
     if (file && file.size > 0 && file.name) {
       if (process.env.BLOB_READ_WRITE_TOKEN) {
         // Upload to Vercel Blob (Production)
